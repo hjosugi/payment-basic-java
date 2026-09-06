@@ -42,7 +42,7 @@ APIは127.0.0.1:8080、模擬Providerは127.0.0.1:9090。`payments.db`と`provid
 python3 tests/contract.py -- java -jar target/payment-basic-java-0.1.0.jar
 ```
 
-WindowsではPython実行名が`python`の場合があります。Goバイナリは`payment-server.exe`としてビルドし、テストコマンドも対応するパスへ変更します。
+WindowsではPython実行名が`python`の場合があります。
 
 ## API
 

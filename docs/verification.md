@@ -1,6 +1,6 @@
 # 検証結果
 
-実行日: 2026-09-06。Linuxのローカル環境で実行しました。GitHub Actions上では未実行です。
+実行日: 2026-09-06。Linuxのローカル環境と、GitHub Actions（ubuntu-latest）の両方で実行しました。
 
 ## 実行結果
 
@@ -26,9 +26,20 @@
 
 各言語で`demo.py`、20件・並行度2の`load.py`、`export_statement.py`、`settlement.py`を実行しました。デモのUNKNOWNは照合でSUCCEEDEDへ回復し、負荷の20操作もすべてSUCCEEDED、全件明細照合は差分0でした。これは操作手順の動作確認であり、性能比較や容量保証ではありません。
 
+## GitHub Actionsでの確認
+
+2026-09-06に`hjosugi`配下の4リポジトリをpublicで作成しpushしました。実装3リポジトリの`CI`ワークフローはすべてsuccessです。`payment-basic`はドキュメントのみでワークフローを持ちません。
+
+| リポジトリ | CIが実行するコマンド | 結果 |
+| --- | --- | --- |
+| [payment-basic-ts](https://github.com/hjosugi/payment-basic-ts) | `npm ci` / `npm run typecheck` / `npm test` / `npm run test:contract` | [success](https://github.com/hjosugi/payment-basic-ts/actions/runs/34012312764) |
+| [payment-basic-go](https://github.com/hjosugi/payment-basic-go) | `go test -race ./...` / `go build` / `python3 tests/contract.py` | [success](https://github.com/hjosugi/payment-basic-go/actions/runs/34012319058) |
+| [payment-basic-java](https://github.com/hjosugi/payment-basic-java) | `mvn --batch-mode verify` / `python3 tests/contract.py` | [success](https://github.com/hjosugi/payment-basic-java/actions/runs/34012322844) |
+
+ローカルと同じ66件がCIでも通ります。ランナーのイメージはGitHubが提供するもので、上記の実行バージョンと完全一致する保証はありません。
+
 ## 実行していないもの
 
-- GitHubリポジトリの作成・push、GitHub Actionsの実行。
 - 実際の決済会社、カード、送金、Webhook、認証連携。
 - Prometheus/Alertmanager本体、通知配送。設定ファイルは同梱。
 - 長時間・分散地域の負荷試験、HA、障害復旧時間の保証。
@@ -36,4 +47,4 @@
 
 ## 再実行
 
-各READMEのbuild・testコマンドを使用してください。`tests/contract.py`は3言語で同じ内容です。模擬ProviderとAPIを自動起動・停止します。GitHub公開用スクリプトはpreviewのみ確認し、実際の新規作成はしていません。
+各READMEのbuild・testコマンドを使用してください。`tests/contract.py`は3言語で同じ内容です。模擬ProviderとAPIを自動起動・停止します。`hjosugi`配下の4リポジトリは、`payment-basic`リポジトリの`scripts/publish.py`と同等の`gh repo create --public --source --remote origin --push`で作成しました。スクリプト自体はpreview出力のみ確認しています。
