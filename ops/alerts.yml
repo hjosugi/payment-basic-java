@@ -1,0 +1,28 @@
+groups:
+  - name: payment-basic
+    rules:
+      - alert: PaymentTargetDown
+        expr: up{job="payment-basic"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "Payment API is unreachable"}
+      - alert: PaymentUnresolved
+        expr: payment_unresolved > 0
+        for: 2m
+        labels: {severity: warning}
+        annotations: {summary: "Unresolved payments remain; inspect reconciliation"}
+      - alert: PaymentProviderSaturated
+        expr: payment_provider_inflight / payment_provider_capacity > 0.8
+        for: 1m
+        labels: {severity: warning}
+        annotations: {summary: "Provider concurrency budget is nearly full"}
+      - alert: PaymentInternalErrors
+        expr: sum(rate(payment_http_requests_total{status=~"5.."}[5m])) / clamp_min(sum(rate(payment_http_requests_total[5m])), 0.001) > 0.01
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "Internal error ratio exceeds the example threshold"}
+      - alert: PaymentSuccessLatency
+        expr: histogram_quantile(0.95, sum by (le) (rate(payment_http_duration_seconds_bucket{outcome="ok"}[5m]))) > 0.5
+        for: 2m
+        labels: {severity: warning}
+        annotations: {summary: "Successful HTTP request latency is elevated"}
